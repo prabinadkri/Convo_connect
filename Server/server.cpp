@@ -1,4 +1,4 @@
-#include <iostream>
+﻿#include <iostream>
 #include <h_net.h>
 
 enum class CustomMsgTypes : uint32_t
@@ -72,10 +72,18 @@ protected:
 		
 			msg.header.id = CustomMsgTypes::Signup;
 			std::cout << msg;
+			/*std::vector<char> name;
 			for (const char i : msg.body) {
-				std::cout << i << "";
+				name.push_back(i);
+				if (i == '|')
+				{
+					
+					break;
+				}
+			}*/
+			for (const char i : msg.body) {
+				std::cout << i;
 			}
-			
 			msg << client->GetID();
 			MessageClient(client, msg);
 

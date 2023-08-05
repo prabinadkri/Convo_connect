@@ -1,6 +1,6 @@
-#include <iostream>
+﻿#include <iostream>
 #include <h_net.h>
-
+#include <string>
 enum class CustomMsgTypes : uint32_t
 {
 	ServerAccept,
@@ -27,13 +27,19 @@ public:
 		msg << timeNow;
 		Send(msg);
 	}
-	void Signupreq()
+	void Signupreq(std::string name,std::string email, std::string password)
 	{
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::Signup;
-		msg << "Name and email";
-		//std::string str = "Name and email";
-		//std::copy(str.begin(), str.end(), std::back_inserter(msg.body));
+		
+		std::vector<uint8_t> n(name.begin(), name.end());
+		n.push_back('|');
+		n.insert(n.end(), email.begin(), email.end());
+		n.push_back('|');
+		n.insert(n.end(), password.begin(), password.end());
+
+		msg << n;
+
 		
 		Send(msg);
 	}
@@ -68,7 +74,7 @@ int main()
 		if (key[1] && !old_key[1]) c.MessageAll();
 		
 		if (key[2] && !old_key[2]) bQuit = true;
-		if (key[3] && !old_key[3]) c.Signupreq();
+		if (key[3] && !old_key[3]) c.Signupreq("Prabin","adhprb111@gmail.com","122345");
 		for (int i = 0; i < 4; i++) old_key[i] = key[i];
 
 		if (c.IsConnected())
