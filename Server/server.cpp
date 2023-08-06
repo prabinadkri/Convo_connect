@@ -1,6 +1,6 @@
 ﻿#include <iostream>
 #include <h_net.h>
-
+#include "database.h"
 enum class CustomMsgTypes : uint32_t
 {
 	ServerAccept,
@@ -8,17 +8,23 @@ enum class CustomMsgTypes : uint32_t
 	ServerPing,
 	MessageAll,
 	ServerMessage,
-	Signup
+	Signup,
+	Login,
+	Sendmsg,
+	Fetchmsg,
+	Fetchfriend
 };
 
 
 
 class CustomServer : public olc::net::server_interface<CustomMsgTypes>
 {
+private:
+	
 public:
 	CustomServer(uint16_t nPort) : olc::net::server_interface<CustomMsgTypes>(nPort)
 	{
-
+		
 	}
 
 protected:
@@ -30,13 +36,13 @@ protected:
 		return true;
 	}
 
-	// Called when a client appears to have disconnected
+
 	virtual void OnClientDisconnect(std::shared_ptr<olc::net::connection<CustomMsgTypes>> client)
 	{
 		std::cout << "Removing client [" << client->GetID() << "]\n";
 	}
 
-	// Called when a message arrives
+
 	virtual void OnMessage(std::shared_ptr<olc::net::connection<CustomMsgTypes>> client, olc::net::message<CustomMsgTypes>& msg)
 	{
 
@@ -47,7 +53,7 @@ protected:
 		{
 			std::cout << "[" << client->GetID() << "]: Server Ping\n";
 
-			// Simply bounce message back to client
+			
 			client->Send(msg);
 		}
 		break;
@@ -56,7 +62,6 @@ protected:
 		{
 			std::cout << "[" << client->GetID() << "]: Message All\n";
 
-			// Construct a new message and send it to all clients
 			olc::net::message<CustomMsgTypes> msg;
 			msg.header.id = CustomMsgTypes::ServerMessage;
 			msg << client->GetID();
@@ -67,20 +72,19 @@ protected:
 		case CustomMsgTypes::Signup:
 		{
 			std::cout << "[" << client->GetID() << "]: Signing up\n";
-
-			
-		
+			try{
+				//TO DO      fetch the char* data as json and code accordingly
+				Database db("Convo_conn.db");
+				db.signup("Prabin", "adhprb111@gmail.com", "3334");
+			}
+			catch (Exception e)
+			{
+				std::cout << e.error;
+			}
+	
 			msg.header.id = CustomMsgTypes::Signup;
 			std::cout << msg;
-			/*std::vector<char> name;
-			for (const char i : msg.body) {
-				name.push_back(i);
-				if (i == '|')
-				{
-					
-					break;
-				}
-			}*/
+		
 			for (const char i : msg.body) {
 				std::cout << i;
 			}

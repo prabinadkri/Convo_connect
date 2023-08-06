@@ -8,7 +8,11 @@ enum class CustomMsgTypes : uint32_t
 	ServerPing,
 	MessageAll,
 	ServerMessage,
-	Signup
+	Signup,
+	Login,
+	Sendmsg,
+	Fetchmsg,
+	Fetchfriend
 };
 
 
@@ -41,6 +45,59 @@ public:
 		msg << n;
 
 		
+		Send(msg);
+	}
+	void Loginreq(std::string email, std::string password)
+	{
+		olc::net::message<CustomMsgTypes> msg;
+		msg.header.id = CustomMsgTypes::Login;
+
+		std::vector<uint8_t> n(email.begin(), email.end());
+		n.push_back('|');
+		
+		n.insert(n.end(), password.begin(), password.end());
+
+		msg << n;
+
+
+		Send(msg);
+	}
+	
+	void Sendmsg(std::string senderemail,std::string receiveremail,std::string message)
+	{
+		olc::net::message<CustomMsgTypes> msg;
+		msg.header.id = CustomMsgTypes::Sendmsg;
+
+		std::vector<uint8_t> n(senderemail.begin(), senderemail.end());
+		n.push_back('|');
+
+		n.insert(n.end(), receiveremail.begin(), receiveremail.end());
+		n.push_back('|');
+
+		n.insert(n.end(), message.begin(), message.end());
+
+		msg << n;
+
+
+		Send(msg);
+	}
+	void Fetchmessage(std::string email, std::string friendemail)
+	{
+		olc::net::message<CustomMsgTypes> msg;
+		msg.header.id = CustomMsgTypes::Fetchmsg;
+		std::vector<uint8_t> n(email.begin(), email.end());
+		n.push_back('|');
+		n.insert(n.end(), friendemail.begin(), friendemail.end());
+		msg << n;
+		Send(msg);
+	}
+	void Fetchfriend(std::string email)
+	{
+		olc::net::message<CustomMsgTypes> msg;
+		msg.header.id = CustomMsgTypes::Fetchfriend;
+		std::vector<uint8_t> n(email.begin(), email.end());
+		
+		msg << n;
 		Send(msg);
 	}
 	void MessageAll()
