@@ -49,25 +49,25 @@ public:
 	}
 	void login(std::string email,std::string password)
 	{
-		std::ostringstream sqlquery;
-		sqlquery << "SELECT * FROM users WHERE email = '" << email << "' AND password = '"<<password<<"';";
+		//std::ostringstream sqlquery;
+		std::string sqlquery = "SELECT * FROM users WHERE email = '"+ email +"' AND password = '"+password+"';";
 
-		const char* query = sqlquery.str().c_str();
+		const char* query = sqlquery.c_str();
 		sqlite3_stmt* stmt;
 		int rc = sqlite3_prepare_v2(db, query, -1, &stmt, nullptr);
-		if (!SQLITE_OK)
+		if (rc!=SQLITE_OK)
 		{
+			
 			throw Exception("Internal Server error");
+			return;
 		}
-		int count = 0;
-		if (sqlite3_step(stmt) == SQLITE_ROW)
-		{
-			count = sqlite3_column_int(stmt, 0);
+		rc = sqlite3_step(stmt);
+
+		if (rc == SQLITE_DONE) {
+			throw Exception("Invalid credentials");
+
 		}
-		if (count == 0)
-		{
-			throw Exception("User not found");
-		}
+		
 		sqlite3_finalize(stmt);
 		
 	}

@@ -79,16 +79,48 @@ protected:
 			}
 			catch (Exception e)
 			{
-				std::cout << e.error;
+				
+				std::vector<uint8_t> error (e.error.begin(),e.error.end());
+				for (auto i : error)
+				{
+					std::cout << i;
+				}
+				msg.header.id = CustomMsgTypes::Signup;
+				msg << error;
+				MessageClient(client, msg);
+				break;
 			}
 	
 			msg.header.id = CustomMsgTypes::Signup;
-			std::cout << msg;
-		
-			for (const char i : msg.body) {
-				std::cout << i;
+			msg << "Signed Up";
+			MessageClient(client, msg);
+
+		}
+		break;
+		case CustomMsgTypes::Login:
+		{
+			std::cout << "[" << client->GetID() << "]: Logging in\n";
+			try {
+				//TO DO      fetch the char* data as json and code accordingly
+				Database db("Convo_conn.db");
+				db.login("adhprb111@gmail.com", "3334");
 			}
-			msg << client->GetID();
+			catch (Exception e)
+			{
+				msg.header.id = CustomMsgTypes::Login;
+				std::vector<uint8_t> error(e.error.begin(), e.error.end());
+				msg << error;
+				MessageClient(client, msg);
+				break;
+			}
+
+			msg.header.id = CustomMsgTypes::Login;
+			//std::cout << msg;
+
+			/*for (const char i : msg.body) {
+				std::cout << i;
+			}*/
+			msg << "Logged in";
 			MessageClient(client, msg);
 
 		}

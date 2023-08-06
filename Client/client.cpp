@@ -113,8 +113,8 @@ int main()
 	CustomClient c;
 	c.Connect("127.0.0.1", 60000);
 
-	bool key[4] = { false, false, false, false };
-	bool old_key[4] = { false, false, false, false };
+	bool key[5] = { false, false, false, false,false };
+	bool old_key[5] = { false, false, false, false ,false};
 
 	bool bQuit = false;
 	while (!bQuit)
@@ -125,14 +125,15 @@ int main()
 			key[1] = GetAsyncKeyState('2') & 0x8000;
 			key[2] = GetAsyncKeyState('3') & 0x8000;
 			key[3] = GetAsyncKeyState('4') & 0x8000;
-		
+			key[4] = GetAsyncKeyState('5') & 0x8000;
 		
 		if (key[0] && !old_key[0]) c.PingServer();
 		if (key[1] && !old_key[1]) c.MessageAll();
 		
 		if (key[2] && !old_key[2]) bQuit = true;
 		if (key[3] && !old_key[3]) c.Signupreq("Prabin","adhprb111@gmail.com","122345");
-		for (int i = 0; i < 4; i++) old_key[i] = key[i];
+		if (key[4] && !old_key[4]) c.Loginreq("adhprb111@gmail.com", "122345");
+		for (int i = 0; i < 5; i++) old_key[i] = key[i];
 
 		if (c.IsConnected())
 		{
@@ -174,10 +175,26 @@ int main()
 				case CustomMsgTypes::Signup:
 				{
 					// Server has responded to a ping request	
-					uint32_t clientID;
-					std::cout << msg;
-					msg >> clientID;
-					std::cout << "Signing in for you i.e. [" << clientID << "]\n";
+					//uint32_t clientID;
+					//std::cout << msg;
+					for (auto i : msg.body)
+					{
+						std::cout << i;
+					}
+					//msg >> clientID;
+					//std::cout << "Signing in for you i.e. [" << clientID << "]\n";
+				}
+				break;
+				case CustomMsgTypes::Login:
+				{
+					// Server has responded to a ping request	
+					/*uint32_t clientID;
+					std::cout << msg;*/
+					for (auto i : msg.body)
+					{
+						std::cout << i;
+					}
+					
 				}
 				break;
 				}
