@@ -67,16 +67,19 @@ public:
 	{
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::Sendmsg;
-
-		std::vector<uint8_t> n(senderemail.begin(), senderemail.end());
+		std::vector<std::string> a;
+		a.push_back(message);
+		a.push_back(senderemail);
+		a.push_back(receiveremail);
+		/*std::vector<uint8_t> n(senderemail.begin(), senderemail.end());
 		n.push_back('|');
 
 		n.insert(n.end(), receiveremail.begin(), receiveremail.end());
 		n.push_back('|');
 
-		n.insert(n.end(), message.begin(), message.end());
+		n.insert(n.end(), message.begin(), message.end());*/
 
-		msg << n;
+		msg << a;
 
 
 		Send(msg);
@@ -113,8 +116,8 @@ int main()
 	CustomClient c;
 	c.Connect("127.0.0.1", 60000);
 
-	bool key[5] = { false, false, false, false,false };
-	bool old_key[5] = { false, false, false, false ,false};
+	bool key[6] = { false, false, false, false,false , false};
+	bool old_key[6] = { false, false, false, false ,false, false};
 
 	bool bQuit = false;
 	while (!bQuit)
@@ -126,14 +129,16 @@ int main()
 			key[2] = GetAsyncKeyState('3') & 0x8000;
 			key[3] = GetAsyncKeyState('4') & 0x8000;
 			key[4] = GetAsyncKeyState('5') & 0x8000;
-		
+			key[5] = GetAsyncKeyState('6') & 0x8000;
 		if (key[0] && !old_key[0]) c.PingServer();
 		if (key[1] && !old_key[1]) c.MessageAll();
 		
 		if (key[2] && !old_key[2]) bQuit = true;
 		if (key[3] && !old_key[3]) c.Signupreq("Prabin","adhprb111@gmail.com","122345");
 		if (key[4] && !old_key[4]) c.Loginreq("adhprb111@gmail.com", "122345");
-		for (int i = 0; i < 5; i++) old_key[i] = key[i];
+		if (key[5] && !old_key[5]) c.Sendmsg("asdfag","adhprb111@gmail.com", "122345");
+
+		for (int i = 0; i < 6; i++) old_key[i] = key[i];
 
 		if (c.IsConnected())
 		{

@@ -115,9 +115,7 @@ namespace olc
 			// ASYNC - Prime context to write a message header
 			void WriteHeader()
 			{
-				// If this function is called, we know the outgoing message queue must have 
-				// at least one message to send. So allocate a transmission buffer to hold
-				// the message, and issue the work - asio, send these bytes
+				
 				boost::asio::async_write(m_socket, boost::asio::buffer(&m_qMessagesOut.front().header, sizeof(message_header<T>)),
 					[this](std::error_code ec, std::size_t length)
 					{
@@ -130,7 +128,17 @@ namespace olc
 							if (m_qMessagesOut.front().body.size() > 0)
 							{
 								// ...it does, so issue the task to write the body bytes
+								if (m_qMessagesOut.front().sender.size() > 0)
+								{
+									WriteSender();
+								}
+								if (m_qMessagesOut.front().reciever.size() > 0)
+								{
+									WriteReciever();
+								}
 								WriteBody();
+								
+								
 							}
 							else
 							{
@@ -189,6 +197,60 @@ namespace olc
 					});
 			}
 
+
+			void WriteSender()
+			{
+				// If this function is called, a header has just been sent, and that header
+				// indicated a body existed for this message. Fill a transmission buffer
+				// with the body data, and send it!
+				boost::asio::async_write(m_socket, boost::asio::buffer(m_qMessagesOut.front().sender.data(), m_qMessagesOut.front().sender.size()),
+					[this](std::error_code ec, std::size_t length)
+					{
+						if (!ec)
+						{
+							// Sending was successful, so we are done with the message
+							// and remove it from the queue
+							//m_qMessagesOut.pop_front();
+
+							// If the queue still has messages in it, then issue the task to 
+							// send the next messages' header.
+						
+						}
+						else
+						{
+							// Sending failed, see WriteHeader() equivalent for description :P
+							std::cout << "[" << id << "] Write Body Fail.\n";
+							m_socket.close();
+						}
+					});
+			}
+
+			void WriteReciever()
+			{
+				// If this function is called, a header has just been sent, and that header
+				// indicated a body existed for this message. Fill a transmission buffer
+				// with the body data, and send it!
+				boost::asio::async_write(m_socket, boost::asio::buffer(m_qMessagesOut.front().reciever.data(), m_qMessagesOut.front().reciever.size()),
+					[this](std::error_code ec, std::size_t length)
+					{
+						if (!ec)
+						{
+							// Sending was successful, so we are done with the message
+							// and remove it from the queue
+							//m_qMessagesOut.pop_front();
+
+							// If the queue still has messages in it, then issue the task to 
+							// send the next messages' header.
+							
+						}
+						else
+						{
+							// Sending failed, see WriteHeader() equivalent for description :P
+							std::cout << "[" << id << "] Write Body Fail.\n";
+							m_socket.close();
+						}
+					});
+			}
 			// ASYNC - Prime context ready to read a message header
 			void ReadHeader()
 			{
@@ -208,8 +270,22 @@ namespace olc
 							{
 								// ...it does, so allocate enough space in the messages' body
 								// vector, and issue asio with the task to read the body.
+								if (m_msgTemporaryIn.header.ssize > 0)
+								{
+									m_msgTemporaryIn.sender.resize(m_msgTemporaryIn.header.ssize);
+									
+									ReadSender();
+									
+								}
+								if (m_msgTemporaryIn.header.rsize > 0)
+								{
+									m_msgTemporaryIn.reciever.resize(m_msgTemporaryIn.header.rsize);
+									ReadReciever();
+								}
 								m_msgTemporaryIn.body.resize(m_msgTemporaryIn.header.size);
 								ReadBody();
+								
+								
 							}
 							else
 							{
@@ -251,7 +327,50 @@ namespace olc
 						}
 					});
 			}
-
+			void ReadSender()
+			{
+				// If this function is called, a header has already been read, and that header
+				// request we read a body, The space for that body has already been allocated
+				// in the temporary message object, so just wait for the bytes to arrive...
+				boost::asio::async_read(m_socket, boost::asio::buffer(m_msgTemporaryIn.sender.data(), m_msgTemporaryIn.sender.size()),
+					[this](std::error_code ec, std::size_t length)
+					{
+						if (!ec)
+						{
+							// ...and they have! The message is now complete, so add
+							// the whole message to incoming queue
+							//AddToIncomingMessageQueue();
+						}
+						else
+						{
+							// As above!
+							std::cout << "[" << id << "] Read Body Fail.\n";
+							m_socket.close();
+						}
+					});
+			}
+			void ReadReciever()
+			{
+				// If this function is called, a header has already been read, and that header
+				// request we read a body, The space for that body has already been allocated
+				// in the temporary message object, so just wait for the bytes to arrive...
+				boost::asio::async_read(m_socket, boost::asio::buffer(m_msgTemporaryIn.reciever.data(), m_msgTemporaryIn.reciever.size()),
+					[this](std::error_code ec, std::size_t length)
+					{
+						if (!ec)
+						{
+							// ...and they have! The message is now complete, so add
+							// the whole message to incoming queue
+							//AddToIncomingMessageQueue();
+						}
+						else
+						{
+							// As above!
+							std::cout << "[" << id << "] Read Body Fail.\n";
+							m_socket.close();
+						}
+					});
+			}
 			// Once a full message is received, add it to the incoming queue
 			void AddToIncomingMessageQueue()
 			{

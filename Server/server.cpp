@@ -125,6 +125,31 @@ protected:
 
 		}
 		break;
+
+		case CustomMsgTypes::Sendmsg:
+		{
+			
+
+			msg.header.id = CustomMsgTypes::Sendmsg;
+			//std::cout << msg;
+			std::cout << "\nsender: ";
+			for (const char i : msg.sender) {
+				std::cout << i;
+			}
+			std::cout << "\n reciever:";
+			for (const char i : msg.reciever) {
+				std::cout << i;
+			}
+			std::cout << "\nBody: ";
+
+			for (const char i : msg.body) {
+				std::cout << i;
+			}
+			//msg << "Logged in";
+			//MessageClient(client, msg);
+
+		}
+		break;
 		}
 	}
 };
