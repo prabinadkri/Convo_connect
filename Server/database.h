@@ -1,6 +1,13 @@
 #include <sqlite3.h>
 #include<iostream>
+#include<vector>
 #include<sstream>
+struct Msg
+{
+	std::vector<std::string> sender;
+	std::vector<std::string> reciever;
+    std::vector<std::string> message;
+};
 class Exception
 {
 
@@ -71,17 +78,147 @@ public:
 		sqlite3_finalize(stmt);
 		
 	}
-	bool fetchfriends()
+
+	std::vector<std::string> finduser(std::string s)
 	{
+
+		std::vector<std::string> usrs;
+
+		std::string sql = "SELECT name from users WHERE name LIKE '"+s+"'%;";
+		sqlite3_stmt* stmt;
+		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+		if (rc != SQLITE_OK) {
+			throw Exception("Error occured");
+
+		}
+
+		while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+			std::string s;
+			s = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+			usrs.push_back(s);
+
+		}
+
+		if (rc != SQLITE_DONE) {
+			throw Exception("Couldnot fetch all messages");
+		}
+
+		sqlite3_finalize(stmt);
+		return usrs;
+	}
+
+	std::vector<std::string> fetchfriends(std::string user)
+	{
+		std::vector<std::string> frnds;
+
+		std::string sql = "SELECT name from users";
+		sqlite3_stmt* stmt;
+		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+		if (rc != SQLITE_OK) {
+			throw Exception("Error occured");
+
+		}
+
+		while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+			std::string s;
+			s = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+			if ((isFriend(user, s) || isFriend(s, user)))
+			{
+				frnds.push_back(s);
+			}
+
+		}
+
+		if (rc != SQLITE_DONE) {
+			throw Exception("Couldnot fetch all messages");
+		}
+
+		sqlite3_finalize(stmt);
+		return frnds;
+	}
+	void sendmsg(std::string sender,std::string reciever,std::string msgs)
+	{
+		if (!(isFriend(sender, reciever) || isFriend(reciever, sender)))
+		{
+			std::string query = "CREATE TABLE IF NOT EXISTS `"+sender+"~"+reciever+"` (id INTEGER PRIMARY KEY, sender TEXT (40),reciever TEXT (40) , message TEXT (1000));";
+			int rc = sqlite3_exec(db, query.c_str(), 0, 0, 0);
+			if (rc != SQLITE_OK) {
+				throw Exception("Error in opening table");
+			}
+		}
+		
+		//std::ostringstream sql;
+		std::string sql;
+		if(isFriend(sender,reciever))
+		{
+			 sql = "INSERT INTO `" + sender + "~" + reciever + "` (sender, reciever, message) VALUES ('" + sender + "', '" + reciever + "','" + msgs + "');";
+		}
+		else
+		{
+			sql = "INSERT INTO `" + reciever + "~" + sender + "` (sender, reciever, message) VALUES ('" + sender + "', '" + reciever + "','" + msgs + "');";
+		}
+		const char* insertSQL = sql.c_str();
+		int rc = sqlite3_exec(db, insertSQL, 0, 0, 0);
+		if (rc != SQLITE_OK) {
+			throw Exception("User already exists");
+		}
 
 	}
-	bool sendmsg()
+	Msg fetchmsg(std::string user1,std::string user2)
 	{
+		Msg a;
+		std::string sql;
+		if (isFriend(user1, user2))
+		{
+			sql = "SELECT sender,reciever,message From " + user1 + "~" + user2 + " ;";
+		}
+		if (isFriend(user2, user1))
+		{
+			sql = "SELECT sender,reciever,message From " + user2 + "~" + user1 + " ;";
+		}
+		sqlite3_stmt* stmt;
+		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+		if (rc != SQLITE_OK) {
+			throw Exception("Error occured");
+			
+		}
+
+		while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+			std::string s;
+			s = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+			a.sender.push_back(s);
+			s = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+			a.reciever.push_back(s);
+			s = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+			a.message.push_back(s);
+			return a;
+
+		}
+
+		if (rc != SQLITE_DONE) {
+			throw Exception("Couldnot fetch all messages");
+		}
+
+		sqlite3_finalize(stmt);
 
 	}
-	bool fetchmsg()
-	{
 
+	bool isFriend(std::string sender,std::string reciever)
+	{
+		const std::string query = "SELECT name FROM sqlite_master WHERE type='table' AND name='" + sender+"~"+reciever + "';";
+		sqlite3_stmt* stmt;
+
+		int rc = sqlite3_prepare_v2(db, query.c_str(), -1, &stmt, nullptr);
+		if (rc != SQLITE_OK) {
+			//std::cerr << "Error preparing the statement: " << sqlite3_errmsg(db) << std::endl;
+			return false;
+		}
+
+		rc = sqlite3_step(stmt);
+		bool tableExists = rc == SQLITE_ROW;
+
+		sqlite3_finalize(stmt);
+		return tableExists;
 	}
 	~Database()
 	{

@@ -129,22 +129,23 @@ protected:
 		case CustomMsgTypes::Sendmsg:
 		{
 			
-
+			Database db("Convo_conn.db");
+			
 			msg.header.id = CustomMsgTypes::Sendmsg;
 			//std::cout << msg;
-			std::cout << "\nsender: ";
-			for (const char i : msg.sender) {
+			std::string sender(msg.sender.begin(), msg.sender.end());
+			std::string reciever(msg.reciever.begin(),msg.reciever.end());
+			std::string message(msg.body.begin(), msg.body.end());
+			std::cout << "\nsender: "<<sender;
+			/*for (const char i : msg.sender) {
 				std::cout << i;
-			}
-			std::cout << "\n reciever:";
-			for (const char i : msg.reciever) {
-				std::cout << i;
-			}
-			std::cout << "\nBody: ";
+			}*/
+			std::cout << "\nreciever: "<<reciever;
+	
+			std::cout << "\nBody: "<<message;
 
-			for (const char i : msg.body) {
-				std::cout << i;
-			}
+			
+		   db.sendmsg(sender,reciever,message);
 			//msg << "Logged in";
 			//MessageClient(client, msg);
 
