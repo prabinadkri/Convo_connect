@@ -12,7 +12,8 @@ enum class CustomMsgTypes : uint32_t
 	Login,
 	Sendmsg,
 	Fetchmsg,
-	Fetchfriend
+	Fetchfriend,
+	Finduser
 };
 
 
@@ -48,12 +49,12 @@ protected:
 
 		switch (msg.header.id)
 		{
-		
+
 		case CustomMsgTypes::ServerPing:
 		{
 			std::cout << "[" << client->GetID() << "]: Server Ping\n";
 
-			
+
 			client->Send(msg);
 		}
 		break;
@@ -72,15 +73,19 @@ protected:
 		case CustomMsgTypes::Signup:
 		{
 			std::cout << "[" << client->GetID() << "]: Signing up\n";
-			try{
-				//TO DO      fetch the char* data as json and code accordingly
+			try {
+				
 				Database db("Convo_conn.db");
-				db.signup("Prabin", "adhprb111@gmail.com", "3334");
+				std::string name(msg.sender.begin(), msg.sender.end());
+				std::string email(msg.reciever.begin(), msg.reciever.end());
+				std::string password(msg.body.begin(), msg.body.end());
+				db.signup(name, email, password);
+				msg << "Signed up";
 			}
 			catch (Exception e)
 			{
-				
-				std::vector<uint8_t> error (e.error.begin(),e.error.end());
+
+				std::vector<uint8_t> error(e.error.begin(), e.error.end());
 				for (auto i : error)
 				{
 					std::cout << i;
@@ -90,7 +95,7 @@ protected:
 				MessageClient(client, msg);
 				break;
 			}
-	
+
 			msg.header.id = CustomMsgTypes::Signup;
 			msg << "Signed Up";
 			MessageClient(client, msg);
@@ -103,7 +108,17 @@ protected:
 			try {
 				//TO DO      fetch the char* data as json and code accordingly
 				Database db("Convo_conn.db");
-				db.login("adhprb111@gmail.com", "3334");
+				
+				std::string email(msg.sender.begin(), msg.sender.end());
+				std::string password(msg.reciever.begin(), msg.reciever.end());
+				
+				db.login(email, password);
+				std::string m = db.getName(email);
+				msg.header.id = CustomMsgTypes::Login;
+				std::vector<uint8_t> a(m.begin(), m.end());
+				msg << a;
+				MessageClient(client, msg);
+				
 			}
 			catch (Exception e)
 			{
@@ -114,44 +129,109 @@ protected:
 				break;
 			}
 
-			msg.header.id = CustomMsgTypes::Login;
+			
 			//std::cout << msg;
 
 			/*for (const char i : msg.body) {
 				std::cout << i;
 			}*/
-			msg << "Logged in";
-			MessageClient(client, msg);
+			
 
 		}
 		break;
 
 		case CustomMsgTypes::Sendmsg:
 		{
-			
+
 			Database db("Convo_conn.db");
-			
+
 			msg.header.id = CustomMsgTypes::Sendmsg;
 			//std::cout << msg;
 			std::string sender(msg.sender.begin(), msg.sender.end());
-			std::string reciever(msg.reciever.begin(),msg.reciever.end());
+			std::string reciever(msg.reciever.begin(), msg.reciever.end());
 			std::string message(msg.body.begin(), msg.body.end());
-			std::cout << "\nsender: "<<sender;
+			std::cout << "\nsender: " << sender;
 			/*for (const char i : msg.sender) {
 				std::cout << i;
 			}*/
-			std::cout << "\nreciever: "<<reciever;
-	
-			std::cout << "\nBody: "<<message;
+			std::cout << "\nreciever: " << reciever;
 
-			
-		   db.sendmsg(sender,reciever,message);
+			std::cout << "\nBody: " << message;
+
+
+			db.sendmsg(sender, reciever, message);
 			//msg << "Logged in";
 			//MessageClient(client, msg);
 
 		}
 		break;
+
+		case CustomMsgTypes::Fetchmsg:
+		{
+			Database db("Convo_conn.db");
+			std::string sender(msg.sender.begin(), msg.sender.end());
+			std::string reciever(msg.reciever.begin(), msg.reciever.end());
+
+			Msg a = db.fetchmsg(sender, reciever);
+			msg.header.id = CustomMsgTypes::Fetchmsg;
+			//std::cout << a.message.size();
+			for (size_t i = 0;i < a.message.size();i++)
+			{
+				std::vector<std::string> m;
+				/*std::cout << a.message[i];
+				std::cout << a.sender[i];
+				std::cout << a.reciever[i];*/
+				m.push_back(a.message[i]);
+				m.push_back(a.sender[i]);
+				m.push_back(a.reciever[i]);
+				msg << m;
+				MessageClient(client, msg);
+			}
+
+
+
 		}
+		break;
+
+		case CustomMsgTypes::Fetchfriend:
+		{
+
+			Database db("Convo_conn.db");
+			std::string sender(msg.body.begin(), msg.body.end());
+		
+
+			std::vector<std::string> a = db.fetchfriends(sender);
+			msg.header.id = CustomMsgTypes::Fetchfriend;
+			//std::cout << a.message.size();
+			for (size_t i = 0;i < a.size();i++)
+			{
+				std::vector<uint8_t> n(a[i].begin(), a[i].end());
+				msg << n;
+				MessageClient(client, msg);
+			}
+		}
+		break;
+
+		case CustomMsgTypes::Finduser:
+		{
+
+			Database db("Convo_conn.db");
+			std::string user(msg.body.begin(), msg.body.end());
+			
+			std::vector<std::string> a = db.finduser(user);
+			msg.header.id = CustomMsgTypes::Finduser;
+			for (size_t i = 0;i < a.size();i++)
+			{
+				std::vector<uint8_t> n(a[i].begin(), a[i].end());
+				msg << n;
+				MessageClient(client, msg);
+			}
+
+
+		}
+		break;
+		
+	    }
 	}
 };
 

@@ -84,7 +84,7 @@ public:
 
 		std::vector<std::string> usrs;
 
-		std::string sql = "SELECT name from users WHERE name LIKE '"+s+"'%;";
+		std::string sql = "SELECT name from users WHERE name LIKE '"+s+"%';";
 		sqlite3_stmt* stmt;
 		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
 		if (rc != SQLITE_OK) {
@@ -160,7 +160,7 @@ public:
 		const char* insertSQL = sql.c_str();
 		int rc = sqlite3_exec(db, insertSQL, 0, 0, 0);
 		if (rc != SQLITE_OK) {
-			throw Exception("User already exists");
+			throw Exception("Couldnot send message");
 		}
 
 	}
@@ -170,11 +170,11 @@ public:
 		std::string sql;
 		if (isFriend(user1, user2))
 		{
-			sql = "SELECT sender,reciever,message From " + user1 + "~" + user2 + " ;";
+			sql = "SELECT sender,reciever,message From `" + user1 + "~" + user2 + "` ;";
 		}
 		if (isFriend(user2, user1))
 		{
-			sql = "SELECT sender,reciever,message From " + user2 + "~" + user1 + " ;";
+			sql = "SELECT sender,reciever,message From `" + user2 + "~" + user1 + "` ;";
 		}
 		sqlite3_stmt* stmt;
 		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
@@ -191,7 +191,7 @@ public:
 			a.reciever.push_back(s);
 			s = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
 			a.message.push_back(s);
-			return a;
+			
 
 		}
 
@@ -200,7 +200,7 @@ public:
 		}
 
 		sqlite3_finalize(stmt);
-
+		return a;
 	}
 
 	bool isFriend(std::string sender,std::string reciever)
@@ -220,6 +220,39 @@ public:
 		sqlite3_finalize(stmt);
 		return tableExists;
 	}
+
+	std::string getName(std::string emails)
+	{
+
+
+	
+		std::string name;
+		std::string sqlquery = "SELECT * FROM users WHERE email ='"+emails+"';";
+
+		const char* aquery = sqlquery.c_str();
+		sqlite3_stmt* tmt;
+		int rc = sqlite3_prepare_v2(db, aquery, -1, &tmt, nullptr);
+		if (rc != SQLITE_OK)
+		{
+
+			throw Exception(sqlite3_errmsg(db));
+			
+		}
+		while ((rc = sqlite3_step(tmt)) == SQLITE_ROW) {
+			std::string s;
+			s = reinterpret_cast<const char*>(sqlite3_column_text(tmt, 1));
+			name = s;
+
+		}
+
+		if (rc != SQLITE_DONE) {
+			throw Exception("No user with given email exist");
+		}
+
+		sqlite3_finalize(tmt);
+		return name;
+	}
+
 	~Database()
 	{
 		sqlite3_close(db);

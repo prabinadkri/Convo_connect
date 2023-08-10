@@ -12,7 +12,8 @@ enum class CustomMsgTypes : uint32_t
 	Login,
 	Sendmsg,
 	Fetchmsg,
-	Fetchfriend
+	Fetchfriend,
+	Finduser
 };
 
 
@@ -35,29 +36,28 @@ public:
 	{
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::Signup;
-		
-		std::vector<uint8_t> n(name.begin(), name.end());
-		n.push_back('|');
-		n.insert(n.end(), email.begin(), email.end());
-		n.push_back('|');
-		n.insert(n.end(), password.begin(), password.end());
+		std::vector<std::string> a;
+		a.push_back(password);
+		a.push_back(name);
+		a.push_back(email);
 
-		msg << n;
 
-		
+		msg << a;
+
+
 		Send(msg);
 	}
 	void Loginreq(std::string email, std::string password)
 	{
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::Login;
+		std::vector<std::string> a;
+		a.push_back("Login");
+		a.push_back(email);
+		a.push_back(password);
 
-		std::vector<uint8_t> n(email.begin(), email.end());
-		n.push_back('|');
-		
-		n.insert(n.end(), password.begin(), password.end());
 
-		msg << n;
+		msg << a;
 
 
 		Send(msg);
@@ -71,13 +71,7 @@ public:
 		a.push_back(message);
 		a.push_back(senderemail);
 		a.push_back(receiveremail);
-		/*std::vector<uint8_t> n(senderemail.begin(), senderemail.end());
-		n.push_back('|');
-
-		n.insert(n.end(), receiveremail.begin(), receiveremail.end());
-		n.push_back('|');
-
-		n.insert(n.end(), message.begin(), message.end());*/
+		
 
 		msg << a;
 
@@ -88,10 +82,12 @@ public:
 	{
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::Fetchmsg;
-		std::vector<uint8_t> n(email.begin(), email.end());
-		n.push_back('|');
-		n.insert(n.end(), friendemail.begin(), friendemail.end());
-		msg << n;
+
+		std::vector<std::string> a;
+		a.push_back("fetch message");
+		a.push_back(email);
+		a.push_back(friendemail);
+		msg << a;
 		Send(msg);
 	}
 	void Fetchfriend(std::string email)
@@ -103,6 +99,16 @@ public:
 		msg << n;
 		Send(msg);
 	}
+
+	void Finduser(std::string a)
+	{
+		olc::net::message<CustomMsgTypes> msg;
+		msg.header.id = CustomMsgTypes::Finduser;
+		std::vector<uint8_t> n(a.begin(), a.end());
+		msg << n;
+		Send(msg);
+	}
+
 	void MessageAll()
 	{
 		olc::net::message<CustomMsgTypes> msg;
@@ -116,8 +122,8 @@ int main()
 	CustomClient c;
 	c.Connect("127.0.0.1", 60000);
 
-	bool key[6] = { false, false, false, false,false , false};
-	bool old_key[6] = { false, false, false, false ,false, false};
+	bool key[9] = { false, false, false, false,false , false, false,false, false};
+	bool old_key[9] = { false, false, false, false ,false, false, false,false, false};
 
 	bool bQuit = false;
 	while (!bQuit)
@@ -130,15 +136,20 @@ int main()
 			key[3] = GetAsyncKeyState('4') & 0x8000;
 			key[4] = GetAsyncKeyState('5') & 0x8000;
 			key[5] = GetAsyncKeyState('6') & 0x8000;
+			key[6] = GetAsyncKeyState('7') & 0x8000;
+			key[7] = GetAsyncKeyState('8') & 0x8000;
+			key[8] = GetAsyncKeyState('9') & 0x8000;
 		if (key[0] && !old_key[0]) c.PingServer();
 		if (key[1] && !old_key[1]) c.MessageAll();
 		
 		if (key[2] && !old_key[2]) bQuit = true;
-		if (key[3] && !old_key[3]) c.Signupreq("Prabin","adhprb111@gmail.com","122345");
-		if (key[4] && !old_key[4]) c.Loginreq("adhprb111@gmail.com", "122345");
-		if (key[5] && !old_key[5]) c.Sendmsg("asdfag","adhprb111@gmail.com", "122345");
-
-		for (int i = 0; i < 6; i++) old_key[i] = key[i];
+		if (key[3] && !old_key[3]) c.Signupreq("Nirajan","abcd@xyz.com","122345");
+		if (key[4] && !old_key[4]) c.Loginreq("adhprb111@gmail.com", "3334");
+		if (key[5] && !old_key[5]) c.Sendmsg("asdfag","adhprb111@gmail.com", "aaa122s345");
+		if (key[6] && !old_key[6]) c.Fetchmessage("asdfag", "adhprb111@gmail.com");
+		if (key[7] && !old_key[7]) c.Fetchfriend("adhprb111@gmail.com");
+		if (key[8] && !old_key[8]) c.Finduser("p");
+		for (int i = 0; i < 9; i++) old_key[i] = key[i];
 
 		if (c.IsConnected())
 		{
@@ -200,6 +211,47 @@ int main()
 						std::cout << i;
 					}
 					
+				}
+				break;
+
+				case CustomMsgTypes::Fetchfriend:
+				{
+					std::cout << '\n';
+					for (auto i : msg.body)
+					{
+						std::cout << i;
+					}
+				}
+				break;
+
+				case CustomMsgTypes::Fetchmsg:
+				{
+					// Server has responded to a ping request	
+					/*uint32_t clientID;
+					std::cout << msg;*/
+
+					std::string sender(msg.sender.begin(), msg.sender.end());
+					std::string reciever(msg.reciever.begin(), msg.reciever.end());
+					std::string message(msg.body.begin(), msg.body.end());
+					std::cout << "\nsender: " << sender;
+					/*for (const char i : msg.sender) {
+						std::cout << i;
+					}*/
+					std::cout << "\nreciever: " << reciever;
+
+					std::cout << "\nBody: " << message;
+
+					
+				}
+				break;
+
+				case CustomMsgTypes::Finduser:
+				{
+					std::cout << '\n';
+					for (auto i : msg.body)
+					{
+						std::cout << i;
+					}
 				}
 				break;
 				}
