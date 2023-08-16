@@ -3,6 +3,17 @@
 #include "tsqueue.h"
 #include "net_msg.h"
 #include "net_connection.h"
+#include<fstream>
+#include<iomanip>
+
+
+struct FMsg
+{
+	std::string sender;
+	std::string reciever;
+	std::string message;
+	std::string time;
+};
 
 namespace olc
 {
@@ -180,6 +191,8 @@ namespace olc
 			// Force server to respond to incoming messages
 			void Update(size_t nMaxMessages = -1, bool bWait = false)
 			{
+				
+
 				if (bWait) m_qMessagesIn.wait();
 
 				// Process as many messages as you can up to the value

@@ -16,6 +16,7 @@ namespace olc
 			uint32_t size = 0;
 			uint32_t ssize = 0;
 			uint32_t rsize = 0;
+			uint32_t tsize = 0;
 		};
 
 		// Message Body contains a header and a std::vector, containing raw bytes
@@ -29,6 +30,7 @@ namespace olc
 			std::vector<uint8_t> body;
 			std::vector<uint8_t> sender;
 			std::vector<uint8_t> reciever;
+			std::vector<uint8_t> time;
 			// returns size of entire message packet in bytes
 			size_t size() const
 			{
@@ -91,15 +93,17 @@ namespace olc
 				std::vector<uint8_t> a(data[0].begin(), data[0].end());
 				std::vector<uint8_t> b(data[1].begin(), data[1].end());
 				std::vector<uint8_t> c(data[2].begin(), data[2].end());
+				std::vector<uint8_t> d(data[3].begin(), data[3].end());
 				msg.body = a;
 				msg.sender = b;
 				msg.reciever = c;
-
+				msg.time = d;
 
 				// Recalculate the message size
 				msg.header.size = msg.body.size();
 				msg.header.ssize = msg.sender.size();
 				msg.header.rsize = msg.reciever.size();
+				msg.header.tsize = msg.time.size();
 
 				// Return the target message so it can be "chained"
 				return msg;

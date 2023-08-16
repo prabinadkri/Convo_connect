@@ -2,11 +2,16 @@
 #include<iostream>
 #include<vector>
 #include<sstream>
+#include<chrono>
+#include<ctime>
+#include<iomanip>
+#pragma warning(disable : 4996)
 struct Msg
 {
 	std::vector<std::string> sender;
 	std::vector<std::string> reciever;
     std::vector<std::string> message;
+	std::vector<std::string> time;
 };
 class Exception
 {
@@ -136,11 +141,11 @@ public:
 		sqlite3_finalize(stmt);
 		return frnds;
 	}
-	void sendmsg(std::string sender,std::string reciever,std::string msgs)
+	void sendmsg(std::string sender,std::string reciever,std::string msgs ,std::string time)
 	{
 		if (!(isFriend(sender, reciever) || isFriend(reciever, sender)))
 		{
-			std::string query = "CREATE TABLE IF NOT EXISTS `"+sender+"~"+reciever+"` (id INTEGER PRIMARY KEY, sender TEXT (40),reciever TEXT (40) , message TEXT (1000));";
+			std::string query = "CREATE TABLE IF NOT EXISTS `"+sender+"~"+reciever+"` (id INTEGER PRIMARY KEY, sender TEXT (60),reciever TEXT (60) , message TEXT (1000),time TEXT (60));";
 			int rc = sqlite3_exec(db, query.c_str(), 0, 0, 0);
 			if (rc != SQLITE_OK) {
 				throw Exception("Error in opening table");
@@ -151,11 +156,12 @@ public:
 		std::string sql;
 		if(isFriend(sender,reciever))
 		{
-			 sql = "INSERT INTO `" + sender + "~" + reciever + "` (sender, reciever, message) VALUES ('" + sender + "', '" + reciever + "','" + msgs + "');";
+		
+			 sql = "INSERT INTO `" + sender + "~" + reciever + "` (sender, reciever, message, time) VALUES('" + sender + "', '" + reciever + "', '" + msgs + "', '" + time + "');";
 		}
 		else
 		{
-			sql = "INSERT INTO `" + reciever + "~" + sender + "` (sender, reciever, message) VALUES ('" + sender + "', '" + reciever + "','" + msgs + "');";
+			sql = "INSERT INTO `" + reciever + "~" + sender + "` (sender, reciever, message, time) VALUES('" + sender + "', '" + reciever + "', '" + msgs + "', '" + time + "');";
 		}
 		const char* insertSQL = sql.c_str();
 		int rc = sqlite3_exec(db, insertSQL, 0, 0, 0);
@@ -170,11 +176,11 @@ public:
 		std::string sql;
 		if (isFriend(user1, user2))
 		{
-			sql = "SELECT sender,reciever,message From `" + user1 + "~" + user2 + "` ;";
+			sql = "SELECT sender,reciever,message,time From `" + user1 + "~" + user2 + "` ;";
 		}
 		if (isFriend(user2, user1))
 		{
-			sql = "SELECT sender,reciever,message From `" + user2 + "~" + user1 + "` ;";
+			sql = "SELECT sender,reciever,message,time From `" + user2 + "~" + user1 + "` ;";
 		}
 		sqlite3_stmt* stmt;
 		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
@@ -191,7 +197,8 @@ public:
 			a.reciever.push_back(s);
 			s = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
 			a.message.push_back(s);
-			
+			s = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+			a.time.push_back(s);
 
 		}
 
@@ -252,6 +259,104 @@ public:
 		sqlite3_finalize(tmt);
 		return name;
 	}
+	
+	void queuemsg(std::string sender, std::string reciever, std::string msgs, std::string time)
+	{
+	
+			std::string query = "CREATE TABLE IF NOT EXISTS `queuemsgs` (id INTEGER PRIMARY KEY, sender TEXT (60),reciever TEXT (60) , message TEXT (1000),time TEXT (60));";
+			int rc = sqlite3_exec(db, query.c_str(), 0, 0, 0);
+			if (rc != SQLITE_OK) {
+				throw Exception("Error in opening table");
+			}
+	
+		//std::ostringstream sql;
+		std::string sql;
+	
+
+			sql = "INSERT INTO `queuemsgs` (sender, reciever, message, time) VALUES('" + sender + "', '" + reciever + "', '" + msgs + "', '" + time + "');";
+		
+		
+		const char* insertSQL = sql.c_str();
+		 rc = sqlite3_exec(db, insertSQL, 0, 0, 0);
+		if (rc != SQLITE_OK) {
+			throw Exception("Couldnot send message");
+		}
+
+	}
+
+
+	void filterqueue()
+	{
+
+		Msg a;
+		std::string sql;
+		
+		sql = "SELECT id,sender,reciever,message,time From `queuemsgs` ;";
+		
+		sqlite3_stmt* stmt;
+		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
+		if (rc != SQLITE_OK) {
+			throw Exception("Error occured");
+
+		}
+
+		while ((rc = sqlite3_step(stmt)) == SQLITE_ROW) {
+			std::string id = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 0));
+			std::string sender = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 1));
+	
+			std::string reciever = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 2));
+			
+			std::string message = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 3));
+			
+			std::string time = reinterpret_cast<const char*>(sqlite3_column_text(stmt, 4));
+			
+
+
+			std::tm tmTime = {};
+			std::istringstream ss(time);
+			ss >> std::get_time(&tmTime, "%Y-%m-%d %H:%M:%S");
+
+			if (ss.fail()) {
+				std::cout << "Failed to parse time." << std::endl;
+				break;
+			}
+
+			std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::from_time_t(std::mktime(&tmTime));
+
+			std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+
+			std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+			std::tm* gmTime = std::gmtime(&currentTime);
+			std::chrono::system_clock::time_point gnow = std::chrono::system_clock::from_time_t(std::mktime(gmTime));
+
+			if (gnow >= timePoint)
+			{
+
+				std::string query = "DELETE FROM `queuemsgs` WHERE id ='" + id + "';";
+				int ac = sqlite3_exec(db, query.c_str(), 0, 0, 0);
+				if (ac != SQLITE_OK) {
+					throw Exception("Error in opening table");
+				}
+				sendmsg(sender, reciever, message, time);
+
+
+
+			}
+
+
+
+		}
+
+		if (rc != SQLITE_DONE) {
+			throw Exception("Couldnot fetch all messages");
+		}
+
+		sqlite3_finalize(stmt);
+		
+
+
+	}
+
 
 	~Database()
 	{

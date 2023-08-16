@@ -1,6 +1,10 @@
 ﻿#include <iostream>
 #include <h_net.h>
 #include <string>
+#include<sstream>
+#include <iomanip>
+
+#pragma warning(disable : 4996)
 enum class CustomMsgTypes : uint32_t
 {
 	ServerAccept,
@@ -40,7 +44,7 @@ public:
 		a.push_back(password);
 		a.push_back(name);
 		a.push_back(email);
-
+		a.push_back("a");
 
 		msg << a;
 
@@ -55,15 +59,28 @@ public:
 		a.push_back("Login");
 		a.push_back(email);
 		a.push_back(password);
-
+		a.push_back("a");
 
 		msg << a;
 
 
 		Send(msg);
 	}
-	
-	void Sendmsg(std::string senderemail,std::string receiveremail,std::string message)
+	static std::string getcurrTime()
+	{
+		std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+
+		std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+		std::tm* gmTime = std::gmtime(&currentTime);
+
+		std::ostringstream oss;
+		oss << std::put_time(gmTime, "%Y-%m-%d %H:%M:%S");
+
+		std::string formattedTime = oss.str();
+
+		return formattedTime;
+	}
+	void Sendmsg(std::string senderemail,std::string receiveremail,std::string message,std::string time=getcurrTime())
 	{
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::Sendmsg;
@@ -72,6 +89,10 @@ public:
 		a.push_back(senderemail);
 		a.push_back(receiveremail);
 		
+
+		
+
+		a.push_back(time);
 
 		msg << a;
 
@@ -87,6 +108,7 @@ public:
 		a.push_back("fetch message");
 		a.push_back(email);
 		a.push_back(friendemail);
+		a.push_back("Time is to be set");
 		msg << a;
 		Send(msg);
 	}
@@ -94,9 +116,12 @@ public:
 	{
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::Fetchfriend;
-		std::vector<uint8_t> n(email.begin(), email.end());
-		
-		msg << n;
+		std::vector<std::string> a;
+		a.push_back(email);
+		a.push_back("s");
+		a.push_back("s");
+		a.push_back("Time is to be set");
+		msg << a;
 		Send(msg);
 	}
 
@@ -104,8 +129,12 @@ public:
 	{
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::Finduser;
-		std::vector<uint8_t> n(a.begin(), a.end());
-		msg << n;
+		std::vector<std::string> c;
+		c.push_back(a);
+		c.push_back("as");
+		c.push_back("as");
+		c.push_back("Time is to be set");
+		msg << c;
 		Send(msg);
 	}
 
@@ -145,10 +174,10 @@ int main()
 		if (key[2] && !old_key[2]) bQuit = true;
 		if (key[3] && !old_key[3]) c.Signupreq("Nirajan","abcd@xyz.com","122345");
 		if (key[4] && !old_key[4]) c.Loginreq("adhprb111@gmail.com", "3334");
-		if (key[5] && !old_key[5]) c.Sendmsg("asdfag","adhprb111@gmail.com", "aaa122s345");
+		if (key[5] && !old_key[5]) c.Sendmsg("asdfag","adhprb111@gmail.com", "trial messages6");// additional argument for time to send can be passed
 		if (key[6] && !old_key[6]) c.Fetchmessage("asdfag", "adhprb111@gmail.com");
 		if (key[7] && !old_key[7]) c.Fetchfriend("adhprb111@gmail.com");
-		if (key[8] && !old_key[8]) c.Finduser("p");
+		if (key[8] && !old_key[8]) c.Finduser("n");
 		for (int i = 0; i < 9; i++) old_key[i] = key[i];
 
 		if (c.IsConnected())

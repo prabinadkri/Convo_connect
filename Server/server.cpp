@@ -1,6 +1,11 @@
 ﻿#include <iostream>
 #include <h_net.h>
+#include<sstream>
+#include<ctime>
+#include<iomanip>
 #include "database.h"
+
+#pragma warning(disable : 4996)
 enum class CustomMsgTypes : uint32_t
 {
 	ServerAccept,
@@ -15,7 +20,6 @@ enum class CustomMsgTypes : uint32_t
 	Fetchfriend,
 	Finduser
 };
-
 
 
 class CustomServer : public olc::net::server_interface<CustomMsgTypes>
@@ -46,7 +50,10 @@ protected:
 
 	virtual void OnMessage(std::shared_ptr<olc::net::connection<CustomMsgTypes>> client, olc::net::message<CustomMsgTypes>& msg)
 	{
-
+		{
+			Database db("Convo_conn.db");
+			db.filterqueue();
+		}
 		switch (msg.header.id)
 		{
 
@@ -150,6 +157,7 @@ protected:
 			std::string sender(msg.sender.begin(), msg.sender.end());
 			std::string reciever(msg.reciever.begin(), msg.reciever.end());
 			std::string message(msg.body.begin(), msg.body.end());
+			std::string time(msg.time.begin(), msg.time.end());
 			std::cout << "\nsender: " << sender;
 			/*for (const char i : msg.sender) {
 				std::cout << i;
@@ -157,9 +165,34 @@ protected:
 			std::cout << "\nreciever: " << reciever;
 
 			std::cout << "\nBody: " << message;
+			std::cout << "\n time: " << time ;
 
+			std::tm tmTime = {};
+			std::istringstream ss(time);
+			ss >> std::get_time(&tmTime, "%Y-%m-%d %H:%M:%S");
 
-			db.sendmsg(sender, reciever, message);
+			if (ss.fail()) {
+				std::cout << "Failed to parse time." << std::endl;
+				break;
+			}
+
+			std::chrono::system_clock::time_point timePoint = std::chrono::system_clock::from_time_t(std::mktime(&tmTime));
+
+			std::chrono::system_clock::time_point now = std::chrono::system_clock::now();
+
+			std::time_t currentTime = std::chrono::system_clock::to_time_t(now);
+			std::tm* gmTime = std::gmtime(&currentTime);
+			std::chrono::system_clock::time_point gnow = std::chrono::system_clock::from_time_t(std::mktime(gmTime));
+
+			if (gnow >= timePoint)
+			{
+				db.sendmsg(sender, reciever, message, time);
+			}
+			else
+			{
+				db.queuemsg(sender, reciever, message, time);
+			}
+			
 			//msg << "Logged in";
 			//MessageClient(client, msg);
 
@@ -184,6 +217,7 @@ protected:
 				m.push_back(a.message[i]);
 				m.push_back(a.sender[i]);
 				m.push_back(a.reciever[i]);
+				m.push_back(a.time[i]);
 				msg << m;
 				MessageClient(client, msg);
 			}
