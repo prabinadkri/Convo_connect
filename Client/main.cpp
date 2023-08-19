@@ -28,34 +28,63 @@ void User::AddUser(){
 }
 User User::AuthenticateUser(string username_, string password_)
 {
-    User user;
-    vector<User> users = User::ReadUserFile("Admin.txt");
-    for (User user : users)
-    {
-        if(user.Password==Password){
-         //if (bcrypt::validatePassword(password_,user.Password)) {
-            if (user.Username == username_)
-            {
-                return user;
-            }
-        }
-    }
-    users = User::ReadUserFile("User.txt");
-    for (User user : users)
-    {
-               if(user.Password==Password){
 
-         //if (bcrypt::validatePassword(password_, user.Password)) {
-            if (user.Username == username_)
-            {
-                return user;
-            }
+    User user;
+    client.Loginreq(username_,password_);
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+
+    while (!client.Incoming().empty())
+    {
+        auto msg = client.Incoming().pop_front().msg;
+
+        switch (msg.header.id)
+        {
+        case CustomMsgTypes::Login:
+        {
+            std::string a(msg.body.begin(), msg.body.end());
+            
+            std::string b(msg.sender.begin(), msg.sender.end());
+            std::string c(msg.reciever.begin(), msg.reciever.end());
+            std::string d(msg.time.begin(), msg.time.end());
+            user.Name = a;
+            user.Password = c;
+            user.email = b;
+            user.Username = d;
+            return user;
+        }break;
         }
-        
     }
-    User Nirajan ("Nirajan","nirajansah1111@gmail.com","User","nirajan11", "123456789",19);
+
+
+    //User user;
+    //vector<User> users = User::ReadUserFile("Admin.txt");
+    //for (User user : users)
+    //{
+    //    if(user.Password==Password){
+    //     //if (bcrypt::validatePassword(password_,user.Password)) {
+    //        if (user.Username == username_)
+    //        {
+    //            return user;
+    //        }
+    //    }
+    //}
+    //users = User::ReadUserFile("User.txt");
+    //for (User user : users)
+    //{
+    //           if(user.Password==Password){
+
+    //     //if (bcrypt::validatePassword(password_, user.Password)) {
+    //        if (user.Username == username_)
+    //        {
+    //            return user;
+    //        }
+    //    }
+    //    
+    //}
+
+   // User Nirajan ("Nirajan","nirajansah1111@gmail.com","User","nirajan11", "123456789",19);
   
-    return Nirajan;
+    //return Nirajan;
 }
 void User::SaveToFile(string filename)
 {

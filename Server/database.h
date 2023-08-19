@@ -13,6 +13,13 @@ struct Msg
     std::vector<std::string> message;
 	std::vector<std::string> time;
 };
+struct usr
+{
+	std::string name;
+	std::string email;
+	std::string username;
+	std::string password;
+};
 class Exception
 {
 
@@ -60,10 +67,10 @@ public:
 		
 
 	}
-	void login(std::string email,std::string password)
+	void login(std::string username,std::string password)
 	{
 		//std::ostringstream sqlquery;
-		std::string sqlquery = "SELECT * FROM users WHERE email = '"+ email +"' AND password = '"+password+"';";
+		std::string sqlquery = "SELECT * FROM users WHERE username = '"+ username +"' AND password = '"+password+"';";
 
 		const char* query = sqlquery.c_str();
 		sqlite3_stmt* stmt;
@@ -229,13 +236,13 @@ public:
 		return tableExists;
 	}
 
-	std::string getName(std::string emails)
+	usr getName(std::string username)
 	{
 
 
-	
-		std::string name;
-		std::string sqlquery = "SELECT * FROM users WHERE email ='"+emails+"';";
+		usr a;
+		//std::string name;
+		std::string sqlquery = "SELECT * FROM users WHERE username ='"+username+"';";
 
 		const char* aquery = sqlquery.c_str();
 		sqlite3_stmt* tmt;
@@ -249,7 +256,13 @@ public:
 		while ((rc = sqlite3_step(tmt)) == SQLITE_ROW) {
 			std::string s;
 			s = reinterpret_cast<const char*>(sqlite3_column_text(tmt, 1));
-			name = s;
+			a.name = s;
+			s = reinterpret_cast<const char*>(sqlite3_column_text(tmt, 2));
+			a.email = s;
+			s = reinterpret_cast<const char*>(sqlite3_column_text(tmt, 3));
+			a.password = s;
+			s = reinterpret_cast<const char*>(sqlite3_column_text(tmt, 4));
+			a.email = s;
 
 		}
 
@@ -258,7 +271,7 @@ public:
 		}
 
 		sqlite3_finalize(tmt);
-		return name;
+		return a;
 	}
 	
 	void queuemsg(std::string sender, std::string reciever, std::string msgs, std::string time)

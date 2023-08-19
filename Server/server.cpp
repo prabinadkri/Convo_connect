@@ -193,22 +193,38 @@ protected:
 				//TO DO      fetch the char* data as json and code accordingly
 				Database db("Convo_conn.db");
 				
-				std::string email(msg.sender.begin(), msg.sender.end());
+				std::string username(msg.sender.begin(), msg.sender.end());
 				std::string password(msg.reciever.begin(), msg.reciever.end());
 				
-				db.login(email, password);
-				std::string m = db.getName(email);
+				db.login(username, password);
+				usr x = db.getName(username);
 				msg.header.id = CustomMsgTypes::Login;
-				std::vector<uint8_t> a(m.begin(), m.end());
-				msg << a;
+				
+
+				std::vector<std::string> m;
+				/*std::cout << a.message[i];
+				std::cout << a.sender[i];
+				std::cout << a.reciever[i];*/
+				m.push_back(x.name);
+				m.push_back(x.email);
+				m.push_back(x.password);
+				m.push_back(x.username);
+				msg << m;
 				MessageClient(client, msg);
+
+				
 				
 			}
 			catch (Exception e)
 			{
 				msg.header.id = CustomMsgTypes::Login;
-				std::vector<uint8_t> error(e.error.begin(), e.error.end());
-				msg << error;
+				std::vector<std::string> m;
+				
+				m.push_back("");
+				m.push_back("");
+				m.push_back("");
+				m.push_back("");
+				msg << m;
 				MessageClient(client, msg);
 				break;
 			}

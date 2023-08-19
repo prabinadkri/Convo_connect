@@ -2,9 +2,9 @@
 #include"main.h"
 #include<wx/wx.h>
 #include <wx/spinctrl.h>
-
+#include<thread>
 #include"MainFrame.h"
-
+#include "./client.h"
 SignupFrame::SignupFrame(const wxString& title) :wxFrame(nullptr, wxID_ANY, title) {
 	wxPanel* panel = new wxPanel(this);
 	
@@ -59,7 +59,21 @@ void SignupFrame::OnSubmitButtonClicked(wxCommandEvent& evt) {
 	User s1(nameStr,emailStr, userRoleStr,usernameStr,passwordStr,age);
 	wxLogStatus("User is being created");
 	s1.AddUser();
-	wxMessageBox("signup successfully", "Login Info", wxOK | wxICON_INFORMATION);
+	std::this_thread::sleep_for(std::chrono::seconds(1));
+	while (!client.Incoming().empty())
+	{
+		auto msg = client.Incoming().pop_front().msg;
+
+		switch (msg.header.id)
+		{
+		case CustomMsgTypes::Signup:
+		{
+			std::string a(msg.body.begin(), msg.body.end());
+			wxMessageBox(a, "Login Info", wxOK | wxICON_INFORMATION);
+		}break;
+		}
+	}
+	
 	wxLogStatus(username);
 }
 void SignupFrame::OnLoginButtonClicked(wxCommandEvent& evt) {

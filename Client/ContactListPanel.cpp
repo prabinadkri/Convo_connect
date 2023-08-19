@@ -15,18 +15,21 @@ ContactListPanel::ContactListPanel(wxWindow *parent, wxWindowID id)
 
   
   
-    //client.Fetchfriend("niru1");
-    //
-    //if (!client.Incoming().empty())
-    //{
-    //    auto msg = client.Incoming().pop_front().msg;
-    //    std::string a(msg.sender.begin(), msg.sender.end());
-    //    AddContact(a);
-    //    //switch (msg.header.id)
-    //    //{
-
-    //    //}
-    //}
+    client.Fetchfriend("niru1");
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+    while (!client.Incoming().empty())
+    {
+        auto msg = client.Incoming().pop_front().msg;
+        
+        switch (msg.header.id)
+        {
+        case CustomMsgTypes::Fetchfriend:
+        {
+            std::string a(msg.body.begin(), msg.body.end());
+            AddContact(a);
+        }break;
+        }
+    }
 
     // Store the original contacts in the contacts collection
     //AddContact(frn);
