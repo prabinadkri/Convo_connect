@@ -112,12 +112,12 @@ public:
 		msg << a;
 		Send(msg);
 	}
-	void Fetchfriend(std::string email)
+	void Fetchfriend(std::string username)
 	{
 		olc::net::message<CustomMsgTypes> msg;
 		msg.header.id = CustomMsgTypes::Fetchfriend;
 		std::vector<std::string> a;
-		a.push_back(email);
+		a.push_back(username);
 		a.push_back("s");
 		a.push_back("s");
 		a.push_back("Time is to be set");
@@ -146,6 +146,7 @@ public:
 	}
 };
 extern CustomClient client;
+extern std::string reciver;
 //
 //int main()
 //{

@@ -1,5 +1,6 @@
 #include "MessageFrame.h"
 #include "ContactListPanel.h" 
+#include "./client.h"
 MessageFrame::MessageFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(nullptr, wxID_ANY, title, pos, size), currentChatPanel(nullptr)
 {
@@ -52,7 +53,7 @@ void MessageFrame::OnContactSelected(const wxString &contactName)
     }
 
     auto iter = chatPanelsMap.find(contactName);
-    
+    reciver = contactName.ToStdString();
     if (iter != chatPanelsMap.end()) {
         // Chat panel already exists, show it
         ChatPanel *existingChatPanel = iter->second;

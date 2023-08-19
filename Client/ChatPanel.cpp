@@ -1,6 +1,7 @@
 #pragma once
 #include "ChatPanel.h"
 #include "client.h"
+std::string reciver;
 ChatPanel::ChatPanel(wxWindow *parent, wxWindowID id)
     : wxPanel(parent, id)
 {
@@ -27,7 +28,7 @@ ChatPanel::ChatPanel(wxWindow *parent, wxWindowID id)
     sendButton->Bind(wxEVT_BUTTON, [this](wxCommandEvent &event) {
         wxString message = messageInput->GetValue();
         if (!message.IsEmpty()) {
-            client.Sendmsg("abcd", "efgh", message.ToStdString());
+            client.Sendmsg("abcd", reciver, message.ToStdString());
             AddMessage("You", message);
             messageInput->Clear();
         }

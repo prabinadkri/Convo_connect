@@ -313,6 +313,7 @@ protected:
 
 			std::vector<std::string> a = db.fetchfriends(sender);
 			msg.header.id = CustomMsgTypes::Fetchfriend;
+			
 			//std::cout << a.message.size();
 			for (size_t i = 0;i < a.size();i++)
 			{
@@ -326,7 +327,9 @@ protected:
 				m.push_back("q");
 				m.push_back("w");
 				m.push_back("e");
+
 				msg << m;
+				
 				MessageClient(client, msg);
 
 
