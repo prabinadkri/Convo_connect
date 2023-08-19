@@ -27,6 +27,7 @@ ChatPanel::ChatPanel(wxWindow *parent, wxWindowID id)
     sendButton->Bind(wxEVT_BUTTON, [this](wxCommandEvent &event) {
         wxString message = messageInput->GetValue();
         if (!message.IsEmpty()) {
+            client.Sendmsg("abcd", "efgh", message.ToStdString());
             AddMessage("You", message);
             messageInput->Clear();
         }
