@@ -147,27 +147,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\..\..\Downloads\attachments\ChatPanel.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\attachments\ContactListPanel.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\attachments\main.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\attachments\MainApp.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\attachments\MainFrame.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\attachments\MessageBubble.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\attachments\MessageFrame.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\attachments\SignupFrame.cpp" />
-    <ClCompile Include="..\..\..\..\..\Downloads\attachments\UserProfileDialog.cpp" />
+    <ClCompile Include="ChatPanel.cpp" />
     <ClCompile Include="client.h" />
+    <ClCompile Include="ContactListPanel.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="MainApp.cpp" />
+    <ClCompile Include="MainFrame.cpp" />
+    <ClCompile Include="MessageBubble.cpp" />
+    <ClCompile Include="MessageFrame.cpp" />
+    <ClCompile Include="SignupFrame.cpp" />
+    <ClCompile Include="UserProfileDialog.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\..\..\Downloads\attachments\ChatPanel.h" />
-    <ClInclude Include="..\..\..\..\..\Downloads\attachments\ContactListPanel.h" />
-    <ClInclude Include="..\..\..\..\..\Downloads\attachments\main.h" />
-    <ClInclude Include="..\..\..\..\..\Downloads\attachments\MainApp.h" />
-    <ClInclude Include="..\..\..\..\..\Downloads\attachments\MainFrame.h" />
-    <ClInclude Include="..\..\..\..\..\Downloads\attachments\MessageBubble.h" />
-    <ClInclude Include="..\..\..\..\..\Downloads\attachments\MessageFrame.h" />
-    <ClInclude Include="..\..\..\..\..\Downloads\attachments\SignupFrame.h" />
-    <ClInclude Include="..\..\..\..\..\Downloads\attachments\UserProfileDialog.h" />
+    <ClInclude Include="ChatPanel.h" />
+    <ClInclude Include="ContactListPanel.h" />
+    <ClInclude Include="main.h" />
+    <ClInclude Include="MainApp.h" />
+    <ClInclude Include="MainFrame.h" />
+    <ClInclude Include="MessageBubble.h" />
+    <ClInclude Include="MessageFrame.h" />
+    <ClInclude Include="SignupFrame.h" />
+    <ClInclude Include="UserProfileDialog.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\..\Downloads\attachments\alice_avatar.png" />
