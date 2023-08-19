@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "MessageBubble.h"
 
 MessageBubble::MessageBubble(wxWindow *parent, wxWindowID id, const wxString &sender, const wxString &message)

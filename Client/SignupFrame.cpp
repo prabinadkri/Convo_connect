@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "SignupFrame.h"
 #include"main.h"
 #include<wx/wx.h>

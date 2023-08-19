@@ -1,5 +1,8 @@
+#pragma once 
+
 #include "MessageFrame.h"
 #include "ContactListPanel.h" 
+
 MessageFrame::MessageFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(nullptr, wxID_ANY, title, pos, size), currentChatPanel(nullptr)
 {
@@ -9,7 +12,6 @@ MessageFrame::MessageFrame(const wxString &title, const wxPoint &pos, const wxSi
 void MessageFrame::SetupUI()
 {
     
-
     scrolledWindow = new wxScrolledWindow(this, wxID_ANY);
     scrolledWindow->SetScrollRate(0, 10);
 
@@ -37,6 +39,7 @@ void MessageFrame::SetupUI()
 void MessageFrame::CreateChatPanel(const wxString &contactName)
 {
     ChatPanel *chatPanel = new ChatPanel(scrolledWindow, wxID_ANY);
+    chatPanel->GetClientfunc(clientdup);
     chatPanelsMap[contactName] = chatPanel;
     chatPanelsSizer->Add(chatPanel, 1, wxEXPAND | wxALL, 5);
     scrolledWindow->Layout();

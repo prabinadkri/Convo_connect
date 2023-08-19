@@ -1,3 +1,4 @@
+#pragma once 
 
 #include "MainApp.h"
 #include"MainFrame.h"

@@ -4,6 +4,7 @@
 ChatPanel::ChatPanel(wxWindow *parent, wxWindowID id)
     : wxPanel(parent, id)
 {
+
     wxBoxSizer *mainSizer = new wxBoxSizer(wxVERTICAL);
 
     messagesScrolledWindow = new wxScrolledWindow(this, wxID_ANY);
@@ -26,6 +27,8 @@ ChatPanel::ChatPanel(wxWindow *parent, wxWindowID id)
 
     sendButton->Bind(wxEVT_BUTTON, [this](wxCommandEvent &event) {
         wxString message = messageInput->GetValue();
+        std::string messagestr = message.ToStdString();
+        Clientptr->Sendmsg("asdfag","adhprb111@gmail.com", messagestr);
         if (!message.IsEmpty()) {
             AddMessage("You", message);
             messageInput->Clear();

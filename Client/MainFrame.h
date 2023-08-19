@@ -1,4 +1,10 @@
 #include<wx/wx.h>
+#pragma once
+
+#include "client.h"
+
+
+// extern CustomClient client;
 
 class MainFrame:public wxFrame
 {
@@ -10,5 +16,9 @@ private:
 
 public:
 	MainFrame(const wxString& title);
+	CustomClient client;
+	// CustomClient getclient(){
+	// 	return client;
+	// }
 	
 };

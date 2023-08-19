@@ -1,10 +1,15 @@
+#pragma once 
 #include "MainFrame.h"
 #include"main.h"
 #include<wx/wx.h>
 #include"SignupFrame.h"
 #include "MessageFrame.h"
 
+
+// CustomClient client;
+
 MainFrame::MainFrame(const wxString& title) :wxFrame(nullptr, wxID_ANY, title) {
+	client.Connect("10.100.56.40",60000);
 	wxPanel* panel = new wxPanel(this);
 	wxStaticText* usernameLabel = new wxStaticText(panel, wxID_ANY, "Username", wxPoint(250,150 ));
 	usernameTextCtrl = new wxTextCtrl(panel, wxID_ANY, "", wxPoint(320, 150),wxSize(200,-1));
@@ -39,7 +44,7 @@ void MainFrame::OnLoginButtonClicked(wxCommandEvent& evt) {
         messageFrame->SetBackgroundColour(wxColor(100, 100, 200));
         messageFrame->SetMinSize(wxSize(400, 400)); // Set the minimum size here
         messageFrame->Bind(wxEVT_SIZE, &MessageFrame::OnSize, messageFrame); // Bind event handler here
-
+		messageFrame->GetCustomClient(client);
         messageFrame->Show(true);
 
 	}

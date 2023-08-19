@@ -1,5 +1,5 @@
 ﻿#include <iostream>
-#include <h_net.h>
+#include "./../Net/h_net.h"
 #include<sstream>
 #include<ctime>
 #include<iomanip>

@@ -1,3 +1,5 @@
+#pragma once 
+
 #include "UserProfileDialog.h"
 
 UserProfileDialog::UserProfileDialog(wxWindow *parent, wxWindowID id)
