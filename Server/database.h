@@ -41,20 +41,21 @@ public:
 			throw Exception("Error in opening in database");
 		}
 	}
-	void signup(std::string name, std::string email, std::string password)
+	void signup(std::string name, std::string email, std::string password,std::string username)
 	{
-		const char* createTableSQL = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT (30),email TEXT (40) UNIQUE, password TEXT (255));";
+		const char* createTableSQL = "CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY, name TEXT (30),email TEXT (40) UNIQUE, password TEXT (255), username TEXT (40) UNIQUE);";
 		int rc = sqlite3_exec(db, createTableSQL, 0, 0, 0);
 		if (rc != SQLITE_OK) {
 			throw Exception("Error in opening table");
 		}
 		//std::ostringstream sql;
-		std::string sql = "INSERT INTO `users` (name, email, password) VALUES ('" + name + "', '" + email + "','" + password + "');";
+		std::string sql = "INSERT INTO `users` (name, email, password, username) VALUES ('" + name + "', '" + email + "','" + password + "','"+ username +"');";
 
 		const char* insertSQL = sql.c_str();
 		rc = sqlite3_exec(db, insertSQL, 0, 0, 0);
 		if (rc != SQLITE_OK) {
 			throw Exception("User already exists");
+			
 		}
 		
 

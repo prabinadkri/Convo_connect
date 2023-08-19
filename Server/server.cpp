@@ -4,7 +4,7 @@
 #include<ctime>
 #include<iomanip>
 #include "database.h"
-
+#include <fstream>
 #pragma warning(disable : 4996)
 enum class CustomMsgTypes : uint32_t
 {
@@ -20,7 +20,12 @@ enum class CustomMsgTypes : uint32_t
 	Fetchfriend,
 	Finduser
 };
-
+struct User{
+	std::string name;
+	std::string email;
+	std::string password;
+	std::string username;
+};
 
 class CustomServer : public olc::net::server_interface<CustomMsgTypes>
 {
@@ -86,7 +91,8 @@ protected:
 				std::string name(msg.sender.begin(), msg.sender.end());
 				std::string email(msg.reciever.begin(), msg.reciever.end());
 				std::string password(msg.body.begin(), msg.body.end());
-				db.signup(name, email, password);
+				std::string username(msg.time.begin(), msg.time.end());
+				db.signup(name, email, password,username);
 				msg << "Signed up";
 			}
 			catch (Exception e)
@@ -106,6 +112,77 @@ protected:
 			msg.header.id = CustomMsgTypes::Signup;
 			msg << "Signed Up";
 			MessageClient(client, msg);
+		/*	bool error = false;
+			msg.header.id = CustomMsgTypes::Signup;
+			
+			std::string name(msg.sender.begin(), msg.sender.end());
+			std::string email(msg.reciever.begin(), msg.reciever.end());
+			std::string password(msg.body.begin(), msg.body.end());
+			std::string username(msg.time.begin(), msg.time.end());
+
+			User usr;
+			std::ifstream infile("User.bin", std::ios::binary);
+			while (!infile.eof())
+			{
+				if (infile.read(reinterpret_cast<char*>(&usr), sizeof(usr)))
+				{
+					if (usr.email == email)
+					{
+						std::vector<std::string>  m;
+						m.push_back("User with email already exists!");
+						m.push_back("");
+						m.push_back("s");
+						m.push_back("Time is to be set");
+						msg << m;
+						MessageClient(client, msg);
+						error = true;
+						break;
+					}
+
+					if (usr.username == username)
+					{
+						std::vector<std::string>  m;
+						m.push_back("Email already exists!");
+						m.push_back("");
+						m.push_back("s");
+						m.push_back("Time is to be set");
+						msg << m;
+						MessageClient(client, msg);
+						error = true;
+						break;
+					}
+				}
+			}
+			
+			infile.close();
+			if (error)
+			{
+				break;
+			}
+			User a;
+			a.name = name;
+			a.email = email;
+			a.password = password;
+			a.username = username;
+			std::ofstream file("User.bin", std::ios::app | std::ios::binary);
+			if (!file)
+			{
+				std::cout << "Error opening file" << std::endl;
+				return;
+			}
+		
+			file.write(reinterpret_cast<const char*>(&a), sizeof(a));
+	
+
+			file.close();
+			std::vector<std::string>  m;
+			m.push_back("Signed up");
+			m.push_back("a");
+			m.push_back("s");
+			m.push_back("Time is to be set");
+			msg << m;
+		
+			MessageClient(client, msg);*/
 
 		}
 		break;
