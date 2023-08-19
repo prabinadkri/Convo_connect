@@ -145,6 +145,7 @@ public:
 		Send(msg);
 	}
 };
+extern CustomClient client;
 //
 //int main()
 //{

@@ -93,7 +93,7 @@ protected:
 				std::string password(msg.body.begin(), msg.body.end());
 				std::string username(msg.time.begin(), msg.time.end());
 				db.signup(name, email, password,username);
-				msg << "Signed up";
+				
 			}
 			catch (Exception e)
 			{
@@ -309,16 +309,29 @@ protected:
 
 			Database db("Convo_conn.db");
 			std::string sender(msg.body.begin(), msg.body.end());
-		
+			std::cout << "fetching friend for "<<sender;
 
 			std::vector<std::string> a = db.fetchfriends(sender);
 			msg.header.id = CustomMsgTypes::Fetchfriend;
 			//std::cout << a.message.size();
 			for (size_t i = 0;i < a.size();i++)
 			{
-				std::vector<uint8_t> n(a[i].begin(), a[i].end());
-				msg << n;
+				std::vector<std::string> m;
+				/*std::cout << a.message[i];
+				std::cout << a.sender[i];
+				std::cout << a.reciever[i];*/
+				
+				std::cout << a[i];
+				m.push_back(a[i]);
+				m.push_back("q");
+				m.push_back("w");
+				m.push_back("e");
+				msg << m;
 				MessageClient(client, msg);
+
+
+
+				
 			}
 		}
 		break;

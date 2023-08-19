@@ -5,7 +5,7 @@
 #include <vector>
 #include "main.h"
 //#include "bcrypt/bcrypt.h"
-
+#include "./client.h"
 using namespace std;
 
 void User::HashPassword() {
@@ -13,13 +13,14 @@ void User::HashPassword() {
 }
 void User::AddUser(){
     this->HashPassword();
-    if (this->UserRole == "Admin")
-        // SaveToFile("Admin.txt");
-        SaveToFile("Admin.bin");
+    client.Signupreq(Name, email, Password, Username);
+    //if (this->UserRole == "Admin")
+    //    // SaveToFile("Admin.txt");
+    //    SaveToFile("Admin.bin");
 
-    else if (this->UserRole == "User")
+    //else if (this->UserRole == "User")
 
-        SaveToFile("User.bin");
+    //    SaveToFile("User.bin");
     // else{
     //     cout << "Invalid User Role" << endl;// Error throwing exception left
     //     return;

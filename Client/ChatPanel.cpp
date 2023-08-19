@@ -1,6 +1,6 @@
-
+#pragma once
 #include "ChatPanel.h"
-
+#include "client.h"
 ChatPanel::ChatPanel(wxWindow *parent, wxWindowID id)
     : wxPanel(parent, id)
 {

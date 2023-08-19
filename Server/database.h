@@ -117,7 +117,7 @@ public:
 	{
 		std::vector<std::string> frnds;
 
-		std::string sql = "SELECT name from users";
+		std::string sql = "SELECT username from users";
 		sqlite3_stmt* stmt;
 		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
 		if (rc != SQLITE_OK) {

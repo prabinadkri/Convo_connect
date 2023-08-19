@@ -1,4 +1,6 @@
+# pragma once
 #include "ContactListPanel.h"
+#include "client.h"
 
 ContactListPanel::ContactListPanel(wxWindow *parent, wxWindowID id)
     : wxPanel(parent, id)
@@ -7,8 +9,12 @@ ContactListPanel::ContactListPanel(wxWindow *parent, wxWindowID id)
 
     contactListBox = new wxListBox(this, wxID_ANY, wxDefaultPosition, wxDefaultSize);
 
+  
+  
+   
+
     // Store the original contacts in the contacts collection
-    AddContact("Alice");
+    //AddContact(frn);
     AddContact("Bob");
     AddContact("Charlie");
 
