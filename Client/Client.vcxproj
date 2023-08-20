@@ -161,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="ChatPanel.h" />
     <ClInclude Include="ContactListPanel.h" />
+    <ClInclude Include="DataFetch.h" />
     <ClInclude Include="main.h" />
     <ClInclude Include="MainApp.h" />
     <ClInclude Include="MainFrame.h" />

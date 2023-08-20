@@ -74,6 +74,9 @@
     <ClInclude Include="UserProfileDialog.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DataFetch.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\..\Downloads\attachments\charlie_avatar.png">
