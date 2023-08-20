@@ -1,6 +1,7 @@
 #include "MessageFrame.h"
 #include "ContactListPanel.h" 
-#include "./client.h"
+#include "ProfileViewFrame.h"
+#include "MainFrame.h"
 MessageFrame::MessageFrame(const wxString &title, const wxPoint &pos, const wxSize &size)
     : wxFrame(nullptr, wxID_ANY, title, pos, size), currentChatPanel(nullptr)
 {
@@ -9,6 +10,7 @@ MessageFrame::MessageFrame(const wxString &title, const wxPoint &pos, const wxSi
 
 void MessageFrame::SetupUI()
 {
+    SetupMenuBar();
     
 
     scrolledWindow = new wxScrolledWindow(this, wxID_ANY);
@@ -29,7 +31,7 @@ void MessageFrame::SetupUI()
     SetSizerAndFit(outerSizer);
 
 
-    wxListBox* listBox = contactListPanel->GetContactListBox(); // Access the list box through the accessor
+    wxListBox* listBox = contactListPanel->GetContactListBox(); 
     listBox->Bind(wxEVT_LISTBOX, &MessageFrame::OnContactListBoxSelection, this);}
 
 
@@ -53,14 +55,12 @@ void MessageFrame::OnContactSelected(const wxString &contactName)
     }
 
     auto iter = chatPanelsMap.find(contactName);
-    reciver = contactName.ToStdString();
+    
     if (iter != chatPanelsMap.end()) {
-        // Chat panel already exists, show it
         ChatPanel *existingChatPanel = iter->second;
-        existingChatPanel->Show(); // Show the existing chat panel
-        existingChatPanel->GetParent()->Layout(); // Update parent layout
+        existingChatPanel->Show(); 
+        existingChatPanel->GetParent()->Layout();
     } else {
-        // Chat panel doesn't exist, create and show it
         CreateChatPanel(contactName);
     }
 }
@@ -83,7 +83,6 @@ void MessageFrame::OnContactListBoxSelection(wxCommandEvent &event)
 
 void MessageFrame::OpenChatPanel(const wxString &contactName)
 {
-    // Hide all other chat panels
     for (const auto &chatPair : chatPanelsMap)
     {
         ChatPanel *chatPanel = chatPair.second;
@@ -94,15 +93,54 @@ void MessageFrame::OpenChatPanel(const wxString &contactName)
     
     if (iter != chatPanelsMap.end())
     {
-        // Chat panel already exists, show it
         ChatPanel *existingChatPanel = iter->second;
-        existingChatPanel->Show(); // Show the existing chat panel
+        existingChatPanel->Show();
     }
     else
     {
-        // Chat panel doesn't exist, create and show it
         CreateChatPanel(contactName);
     }
 
-    scrolledWindow->Layout(); // Update layout
+    scrolledWindow->Layout();
+}
+
+void MessageFrame::SetupMenuBar()
+{
+    menuBar = new wxMenuBar;
+
+    wxMenu* profileMenu = new wxMenu;
+    profileMenu->Append(ID_VIEW_PROFILE, "View Profile\tCtrl+P", "View your profile");
+
+    menuBar->Append(profileMenu, "&Profile");
+
+    wxMenu* logoutMenu = new wxMenu;
+    logoutMenu->Append(ID_LOGOUT, "Logout\tCtrl+L", "Logout from the application");
+    menuBar->Append(logoutMenu, "&Logout");
+    Bind(wxEVT_MENU, &MessageFrame::OnLogoutMenuItem, this, ID_LOGOUT);
+
+    SetMenuBar(menuBar);
+
+    Bind(wxEVT_MENU, &MessageFrame::OnProfileMenuItem, this, ID_VIEW_PROFILE);
+}
+
+void MessageFrame::OnProfileMenuItem(wxCommandEvent& event)
+{
+    ProfileFrame* frame = new ProfileFrame("User Profile");
+    frame->Show(true);
+    frame->SetSize(800, 600);
+   
+}
+
+void MessageFrame::OnLogoutMenuItem(wxCommandEvent& event)
+{
+
+    // Implement your logout logic here
+    // For example, closing the current frame or opening a login window
+    Close(); // Close the current frame
+    MainFrame* main_Frame = new MainFrame("Convo+Connect");
+
+
+    main_Frame->SetClientSize(800, 600);
+    main_Frame->Center();
+    main_Frame->Show();
 }

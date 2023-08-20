@@ -17,10 +17,22 @@ public:
         event.Skip();
     }
 private:
+    void SetupMenuBar();
+    void OnProfileMenuItem(wxCommandEvent& event);
+    void OnLogoutMenuItem(wxCommandEvent& event);
+
+    wxMenuBar* menuBar;
+    //static const int ID_VIEW_PROFILE = wxID_HIGHEST + 1;
+
+
     wxScrolledWindow *scrolledWindow;
     ContactListPanel *contactListPanel;
     wxBoxSizer *chatPanelsSizer; 
-
+    enum
+    {
+        ID_VIEW_PROFILE = wxID_HIGHEST + 1,
+        ID_LOGOUT
+    };
     std::unordered_map<wxString, ChatPanel *> chatPanelsMap; // Use std::unordered_map
     ChatPanel *currentChatPanel; // Add this member variable
 
@@ -30,7 +42,6 @@ private:
     void OnContactListBoxSelection(wxCommandEvent &event);
     void OpenChatPanel(const wxString &contactName);
 
-     
 };
 
 

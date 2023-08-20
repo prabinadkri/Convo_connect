@@ -5,10 +5,10 @@
 #include "MessageFrame.h"
 #include "client.h"
 #include <thread>
-CustomClient client;
+
 MainFrame::MainFrame(const wxString& title) :wxFrame(nullptr, wxID_ANY, title) {
 
-	client.Connect("127.0.0.1",60000);
+	
 	//client.Sendmsg("asdd", "xyz", "123");
 	wxPanel* panel = new wxPanel(this);
 	wxStaticText* usernameLabel = new wxStaticText(panel, wxID_ANY, "Username", wxPoint(250,150 ));
