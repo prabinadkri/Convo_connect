@@ -12,7 +12,11 @@
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
-
+Client/build
+Server/build
+Server/Sqlite
+Server/CMakeLists.txt
+Client/CMakeLists.txt
 # Mono auto generated files
 mono_crash.*
 
