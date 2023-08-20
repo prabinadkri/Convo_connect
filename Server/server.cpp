@@ -308,6 +308,7 @@ protected:
 				std::cout << a.sender[i];
 				std::cout << a.reciever[i];*/
 				m.push_back(a.message[i]);
+				std::cout << a.message[i];
 				m.push_back(a.sender[i]);
 				m.push_back(a.reciever[i]);
 				m.push_back(a.time[i]);
