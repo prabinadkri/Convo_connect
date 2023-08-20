@@ -1,9 +1,10 @@
-﻿#include <iostream>
+﻿#pragma once
+#include <iostream>
 #include <h_net.h>
 #include <string>
 #include<sstream>
 #include <iomanip>
-
+#include "./main.h"
 #pragma warning(disable : 4996)
 enum class CustomMsgTypes : uint32_t
 {
@@ -147,6 +148,7 @@ public:
 };
 extern CustomClient client;
 extern std::string reciver;
+extern User sender;
 //
 //int main()
 //{

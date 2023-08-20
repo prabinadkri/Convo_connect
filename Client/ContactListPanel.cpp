@@ -15,7 +15,7 @@ ContactListPanel::ContactListPanel(wxWindow *parent, wxWindowID id)
 
   
   
-    client.Fetchfriend("niru1");
+    client.Fetchfriend(sender.getUsername());
     std::this_thread::sleep_for(std::chrono::seconds(1));
     while (!client.Incoming().empty())
     {
@@ -31,10 +31,10 @@ ContactListPanel::ContactListPanel(wxWindow *parent, wxWindowID id)
         }
     }
 
-    // Store the original contacts in the contacts collection
-    //AddContact(frn);
-    AddContact("Bob");
-    AddContact("Charlie");
+    //// Store the original contacts in the contacts collection
+    ////AddContact(frn);
+    //AddContact("Bob");
+    //AddContact("Charlie");
 
     wxBoxSizer *sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(searchBar, 0, wxEXPAND | wxALL, 5);

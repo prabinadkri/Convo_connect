@@ -262,7 +262,7 @@ public:
 			s = reinterpret_cast<const char*>(sqlite3_column_text(tmt, 3));
 			a.password = s;
 			s = reinterpret_cast<const char*>(sqlite3_column_text(tmt, 4));
-			a.email = s;
+			a.username = s;
 
 		}
 

@@ -23,12 +23,14 @@ ChatPanel::ChatPanel(wxWindow *parent, wxWindowID id)
     mainSizer->Add(sendButton, 0, wxALIGN_RIGHT | wxALL, 5);
 
 
+   
+
     SetSizerAndFit(mainSizer);
 
     sendButton->Bind(wxEVT_BUTTON, [this](wxCommandEvent &event) {
         wxString message = messageInput->GetValue();
         if (!message.IsEmpty()) {
-            client.Sendmsg("abcd", reciver, message.ToStdString());
+            client.Sendmsg(sender.getUsername(), reciver, message.ToStdString());
             AddMessage("You", message);
             messageInput->Clear();
         }

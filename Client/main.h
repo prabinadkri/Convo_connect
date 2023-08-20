@@ -1,4 +1,5 @@
 #pragma warning(disable: 4996)
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -45,6 +46,12 @@ public:
     static vector<User> ReadUserFile(string filename);
     bool IsEmpty();
     void serializeString(ofstream& file, const string& data) ;
+
+    string getUsername()
+    {
+        return Person::Username;
+    }
+
 
 private:
 
