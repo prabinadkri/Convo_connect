@@ -17,6 +17,10 @@ Server/build
 Server/Sqlite
 Server/CMakeLists.txt
 Client/CMakeLists.txt
+Server/Server.vcxproj
+Server/Server.vcxproj.filters
+Client/Client.vcxproj
+Client/Client.vcxproj.filters
 # Mono auto generated files
 mono_crash.*
 
@@ -213,7 +217,7 @@ PublishScripts/
 # Microsoft Azure Build Output
 csx/
 *.build.csdef
-
+Convo_connect.sln
 # Microsoft Azure Emulator
 ecf/
 rcf/
