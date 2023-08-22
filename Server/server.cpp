@@ -245,7 +245,7 @@ protected:
 
 			Database db("Convo_conn.db");
 
-			msg.header.id = CustomMsgTypes::Sendmsg;
+			msg.header.id = CustomMsgTypes::Fetchmsg;
 			//std::cout << msg;
 			std::string sender(msg.sender.begin(), msg.sender.end());
 			std::string reciever(msg.reciever.begin(), msg.reciever.end());
@@ -288,6 +288,7 @@ protected:
 			
 			//msg << "Logged in";
 			//MessageClient(client, msg);
+			MessageAllClients(msg);
 
 		}
 		break;
@@ -297,7 +298,7 @@ protected:
 			Database db("Convo_conn.db");
 			std::string sender(msg.sender.begin(), msg.sender.end());
 			std::string reciever(msg.reciever.begin(), msg.reciever.end());
-
+			std::cout << "Fetching message for " << sender << " and " << reciever;
 			Msg a = db.fetchmsg(sender, reciever);
 			msg.header.id = CustomMsgTypes::Fetchmsg;
 			//std::cout << a.message.size();
