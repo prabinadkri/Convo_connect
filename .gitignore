@@ -363,3 +363,14 @@ MigrationBackup/
 FodyWeavers.xsd
 /Server/sqlite3.c
 /Server/sqlite3.h
+
+
+
+Server/Server.vcxproj
+Server/Server.vcxproj.filters
+Client/Client.vcxproj
+Client/Client.vcxproj.filters
+Convo_Connect.sln
+Convo_connect.sln
+Net/Net.vcxproj
+Net/Net.vcxproj.filters
