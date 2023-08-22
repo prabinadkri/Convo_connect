@@ -43,7 +43,7 @@ protected:
                     std::string rcvr(msg.reciever.begin(), msg.reciever.end());
                     std::string mess(msg.body.begin(), msg.body.end());
                     std::string ti(msg.time.begin(), msg.time.end());
-                    if (rcvr == sender.getUsername() && sendr==reciver)
+                    if (rcvr == sender.getUsername())
                     {
                         a.sen = sendr;
                         a.rec = rcvr;
