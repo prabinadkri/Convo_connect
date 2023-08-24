@@ -368,8 +368,15 @@ protected:
 			msg.header.id = CustomMsgTypes::Finduser;
 			for (size_t i = 0;i < a.size();i++)
 			{
-				std::vector<uint8_t> n(a[i].begin(), a[i].end());
-				msg << n;
+				std::vector<std::string> m;
+				std::cout << a[i];
+				m.push_back(a[i]);
+				m.push_back("q");
+				m.push_back("w");
+				m.push_back("e");
+
+				msg << m;
+
 				MessageClient(client, msg);
 			}
 

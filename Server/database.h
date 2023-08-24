@@ -96,8 +96,11 @@ public:
 	{
 
 		std::vector<std::string> usrs;
-
-		std::string sql = "SELECT name from users WHERE name LIKE '"+s+"%';";
+		if (s.empty())
+		{
+			return usrs;
+		}
+		std::string sql = "SELECT username from users WHERE username LIKE '"+s+"%';";
 		sqlite3_stmt* stmt;
 		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
 		if (rc != SQLITE_OK) {
@@ -186,9 +189,18 @@ public:
 		{
 			sql = "SELECT sender,reciever,message,time From `" + user1 + "~" + user2 + "` ;";
 		}
-		if (isFriend(user2, user1))
+		else if (isFriend(user2, user1))
 		{
 			sql = "SELECT sender,reciever,message,time From `" + user2 + "~" + user1 + "` ;";
+		}
+		else
+		{
+			std::string query = "CREATE TABLE IF NOT EXISTS `" + user1 + "~" + user2 + "` (id INTEGER PRIMARY KEY, sender TEXT (60),reciever TEXT (60) , message TEXT (1000),time TEXT (60));";
+			int rc = sqlite3_exec(db, query.c_str(), 0, 0, 0);
+			if (rc != SQLITE_OK) {
+				throw Exception("Error in opening table");
+			}
+			sql = "SELECT sender,reciever,message,time From `" + user1 + "~" + user2 + "` ;";
 		}
 		sqlite3_stmt* stmt;
 		int rc = sqlite3_prepare_v2(db, sql.c_str(), -1, &stmt, nullptr);
