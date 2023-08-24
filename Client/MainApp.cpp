@@ -6,7 +6,7 @@
 wxIMPLEMENT_APP(MainApp);
 CustomClient client;
 bool MainApp::OnInit() {
-	client.Connect("127.0.0.1", 60000);
+	client.Connect("192.168.209.57", 60000);
 	MainFrame* mainFrame = new MainFrame("Convo+Connect");
 	
 

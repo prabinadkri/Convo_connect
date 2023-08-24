@@ -77,6 +77,9 @@
     <ClInclude Include="DataFetch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bufferedbitmap.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\..\..\Downloads\attachments\charlie_avatar.png">

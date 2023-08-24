@@ -14,6 +14,7 @@ public:
 
     wxListBox* GetContactListBox() { return contactListBox; } // Public accessor method
     void OnSearchBarEnter(wxCommandEvent &event);
+    
 
 private:
     wxListBox *contactListBox; // This is of type wxListBox

@@ -18,7 +18,10 @@ enum class CustomMsgTypes : uint32_t
 	Sendmsg,
 	Fetchmsg,
 	Fetchfriend,
-	Finduser
+	Finduser,
+	RealFetch
+
+
 };
 
 

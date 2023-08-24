@@ -41,7 +41,7 @@ void MainFrame::OnLoginButtonClicked(wxCommandEvent& evt) {
 
    MessageFrame* messageFrame = new MessageFrame("Convo_Connect", wxDefaultPosition, wxDefaultSize);
         messageFrame->SetClientSize(800, 600);
-        messageFrame->SetBackgroundColour(wxColor(100, 100, 200));
+        //messageFrame->SetBackgroundColour(wxColor(100, 100, 200));
         messageFrame->SetMinSize(wxSize(400, 400)); // Set the minimum size here
         messageFrame->Bind(wxEVT_SIZE, &MessageFrame::OnSize, messageFrame); // Bind event handler here
 		

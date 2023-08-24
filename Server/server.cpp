@@ -18,7 +18,8 @@ enum class CustomMsgTypes : uint32_t
 	Sendmsg,
 	Fetchmsg,
 	Fetchfriend,
-	Finduser
+	Finduser,
+	RealFetch
 };
 struct User{
 	std::string name;
@@ -245,7 +246,7 @@ protected:
 
 			Database db("Convo_conn.db");
 
-			msg.header.id = CustomMsgTypes::Fetchmsg;
+			msg.header.id = CustomMsgTypes::RealFetch;
 			//std::cout << msg;
 			std::string sender(msg.sender.begin(), msg.sender.end());
 			std::string reciever(msg.reciever.begin(), msg.reciever.end());

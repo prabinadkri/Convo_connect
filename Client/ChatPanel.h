@@ -11,13 +11,18 @@ wxDECLARE_EVENT(DATA_FETCH_EVENT, wxThreadEvent);
 class ChatPanel : public wxPanel
 {
 public:
-    ChatPanel(wxWindow *parent, wxWindowID id);
+    ChatPanel(wxWindow *parent, wxWindowID id, wxString other);
     
     // Method to add a new message to the chat
     void AddMessage(const wxString &sender, const wxString &message);
     void OnDataFetchEvent(wxThreadEvent& event);
     // void OnCloseButtonClicked(wxCommandEvent &event);
+    wxString getUserName() {
+        return away;
+    }
+
 private:
+    wxString away;
     wxTextCtrl *messageInput;
     wxButton *sendButton;
     wxScrolledWindow *messagesScrolledWindow; // Add a wxScrolledWindow
@@ -29,3 +34,5 @@ protected:
 };
 
 #endif // CHATPANEL_H
+// In your header file
+
